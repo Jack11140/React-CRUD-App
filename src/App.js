@@ -1,35 +1,17 @@
-import React, {useState, useCallback} from 'react'
+import React, {useState} from "react";
 import "./App.css";
+import List from "./components/List";
 import Form from "./components/Form";
-import Lists from "./components/Lists";
 const initialCrudData = localStorage.getItem("crudData") ? JSON.parse(localStorage.getItem("crudData")) : [];
 
-function App() {
-  console.log("App Component");
+export default function App () {
 
   const [crudData, setCrudData] = useState(initialCrudData);
   const [expense, setExpense] = useState("");
   const [cost, setCost] = useState("");
 
-  const handleClick = useCallback(
-    (id) => {
-      let newCrudData = crudData.filter((data) => data.id !== id);
-      setCrudData(newCrudData);
-      localStorage.setItem('crudData', JSON.stringify(newCrudData));
-    },
-    [crudData]
-  );
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const formData = {};
-    e.target.elements.forEach((element) => {
-      if (element.name) {
-        formData[element.name] = element.value;
-      }
-    });
-
     let newCrud = {
       id: Date.now(),
       title: expense,
@@ -52,15 +34,17 @@ function App() {
     const totalCost = crudData.reduce((total, data) => total + Number(data.cost), 0);
     return totalCost;
   };
-  return (
+
+    return(
     <div className="flex flex-col items-start justify-center  w-screen h-screen bg-amber-400">
       <h1 className="text-3xl font-bold">예산 계산기</h1>
       <div className="w-full p-6 m-4 bg-white rounded shadow lg:w-3/4 lg:max-w-lg">
         <div className="flex justify-between mb-3">
           :D
         </div>
+
         <Form handleSubmit={handleSubmit} expense={expense} setExpense={setExpense} cost={cost} setCost={setCost} />
-        {/* <Lists crudData={crudData} setCrudData={setCrudData}/> */}
+        <List crudData={crudData} setCrudData={setCrudData}/>
 
         <div className="flex justify-between">
           <button onClick={handleRemoveAll} className="p-2 mt-4 text-red-500 border-2 border-red-500 rounded hover:text-white hover:bg-red-500">
@@ -68,9 +52,8 @@ function App() {
           </button>
           <p className="mt-2">총지출: {calculateTotalExpenses()}원</p>
         </div>
+
       </div>
     </div>
-  )
+    );
 }
-
-export default App
