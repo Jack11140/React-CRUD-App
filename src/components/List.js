@@ -1,50 +1,125 @@
-import React from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 
-export default function List({ crudData, setCrudData }) {
-    const handleCompleteChange = (id) => {
-      let newCrudData = crudData.map((data) => {
-        if (data.id === id) {
-          data.completed = !data.completed;
-        }
-        return data;
-      });
-      setCrudData(newCrudData);
-    };
+const List = React.memo(({
+  id, title, cost, completed, crudData, setCrudData, provided, snapshot, handleClick
+}) => {
 
-    const handleClick = (id) => {
-      let newCrudData = crudData.filter((data) => data.id !== id);
-      console.log("newCrudData", newCrudData);
-      setCrudData(newCrudData);
-    };
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setIsEditedTitle] = useState(title);
+  const [editedCost, setIsEditedCost] = useState(cost);
 
+  console.log("List Component");
+
+  const handleCompleteChange = (id) => {
+    let newCrudData = crudData.map((data) => {
+      if(data.id === id) {
+        data.completed = !data.completed;
+      }
+      return data;
+    });
+    setCrudData(newCrudData);
+    localStorage.setItem('crudData', JSON.stringify(newCrudData));
+
+  };
+
+  const handleEditChangeExpense = (event) => {
+    const { value } = event.target;
+    setIsEditedTitle(value);
+    //setIsEditedTitle(event.target.value);
+  }
+  const handleEditChangeCost = (event) => {
+    const { value } = event.target;
+    setIsEditedCost(value);
+    //setIsEditedCost(event.target.value);
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    let newCrudData = crudData.map(data => {
+    if(data.id === id) {
+      data.title = editedTitle;
+      data.cost = editedCost;
+    }
+    return data;
+    })
+    setCrudData(newCrudData);
+    localStorage.setItem('crudData', JSON.stringify(newCrudData));
+    setIsEditing(false);
+  }
+
+  if(isEditing) {
+    return(
+          <div className={'flex items-center justify-between w-full px-4 py-1 my-2 bg-gray-100 text-gray-600 border rounded'}>
+              <div className="items-center">
+                <form onSubmit={{handleSubmit}}>
+                  <input
+                  className="w-full px-3 py-2 mr-4 text-gray-500 rounded"
+                  value={editedTitle}
+                  onChange={handleEditChangeExpense}
+                  autoFocus
+                  />
+                  <input
+                  className="w-full px-3 py-2 mr-4 text-gray-500 rounded"
+                  value={editedCost}
+                  onChange={handleEditChangeCost}
+                  autoFocus
+                  />
+                </form>
+              </div>
+              <div className="items-center">
+                  <button
+                  className="material-icons float-right px-4 py-2"
+                  onClick={() => setIsEditing(false)}
+                  >cancel</button>
+
+                  <button
+                  className="material-icons float-right px-4 py-2"
+                  onClick={handleSubmit}
+                  type="submit"
+                  >save</button>
+              </div>
+          </div>
+    )
+  } else {
     return (
-      <div>
-        {crudData.map((data, index) => (
-          <div
-            key={data.id}
-            className="flex items-center justify-between w-full px-4 py-1 my-2 text-gray-600 border rounded"
-          >
+        <div
+        key={id}
+        {...provided.droppableProps}
+        ref={provided.innerRef}
+        {...provided.dragHandleProps}
+        className={`${
+            snapshot.isDragging ? "bg-gray-400" : "bg-gray-100"
+          } flex items-center justify-between w-full px-4 py-1 my-2 text-gray-600 border rounded`}
+        >
+          <div className={'flex items-center justify-between w-full px-4 py-1 my-2 text-gray-600 border rounded'}>
             <div className="items-center">
               <input
                 type="checkbox"
-                onChange={() => handleCompleteChange(data.id)}
-                defaultChecked={data.completed}
-              />{' '}
-              <span className={data.completed ? 'line-through' : undefined} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ marginRight: '10px' }}>지출: {data.title},</span>
-                <span>{data.title}: {data.cost}원</span>
-            </span>
+                onChange={() => handleCompleteChange(id)}
+                defaultChecked={completed}
+              />{" "}
+              <span className={completed ? "line-through" : undefined}>
+                <span style={{ marginRight: '10px' }}>지출 항목: {title},</span>
+                <span>비용: {cost}원</span>
+              </span>
             </div>
+
             <div className="items-center">
-              <button className="material-icons px-4 py-2 float-right" onClick={() => handleClick(data.id)}>
-                delete
-              </button>
-              <button className="material-icons px-4 py-2 float-right" onClick={() => handleClick(data.id)}>
-                edit
-              </button>
+              <button
+              className="material-icons float-right px-4 py-2"
+              onClick={() => {handleClick(id)}}
+              >delete</button>
+
+              <button
+              className="material-icons float-right px-4 py-2"
+              onClick={() => setIsEditing(true)} 
+              type="submit"
+              >edit</button>
             </div>
           </div>
-        ))}
-      </div>
-    );
-  }
+        </div>
+        );
+    }
+});
+
+export default List

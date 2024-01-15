@@ -26,12 +26,12 @@ const Lists = React.memo(({ crudData, setCrudData, handleClick }) => {
 
     if (result.destination) return;
 
-    const newCrudData = crudData;
+    const newTodoData = todoData;
 
-    const [reorderedItem] = newCrudData.splice(result.source.index, 1)
-    newCrudData.splice(result.destination.index, 0, reorderedItem);
-    setCrudData(newCrudData);
-    localStorage.setItem('crudData', JSON.stringify(newCrudData));
+    const [reorderedItem] = newTodoData.splice(result.source.index, 1)
+    newTodoData.splice(result.destination.index, 0, reorderedItem);
+    setTodoData(newTodoData);
+    localStorage.setItem('todoData', JSON.stringify(newTodoData));
   }
 
   return (

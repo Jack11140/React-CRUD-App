@@ -1,5 +1,6 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import "./App.css";
+import Lists from "./components/Lists";
 import List from "./components/List";
 import Form from "./components/Form";
 const initialCrudData = localStorage.getItem("crudData") ? JSON.parse(localStorage.getItem("crudData")) : [];
@@ -9,6 +10,15 @@ export default function App () {
   const [crudData, setCrudData] = useState(initialCrudData);
   const [expense, setExpense] = useState("");
   const [cost, setCost] = useState("");
+
+  const handleClick = useCallback(
+    (id) => {
+      let newCrudData = crudData.filter((data) => data.id !== id);
+      setCrudData(newCrudData);
+      localStorage.setItem('crudData', JSON.stringify(newCrudData));
+    },
+    [crudData]
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,7 +54,7 @@ export default function App () {
         </div>
 
         <Form handleSubmit={handleSubmit} expense={expense} setExpense={setExpense} cost={cost} setCost={setCost} />
-        <List crudData={crudData} setCrudData={setCrudData}/>
+        <Lists crudData={crudData} setCrudData={setCrudData}/>
 
         <div className="flex justify-between">
           <button onClick={handleRemoveAll} className="p-2 mt-4 text-red-500 border-2 border-red-500 rounded hover:text-white hover:bg-red-500">
