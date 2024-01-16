@@ -54,7 +54,7 @@ export default function App () {
         </div>
 
         <Form handleSubmit={handleSubmit} expense={expense} setExpense={setExpense} cost={cost} setCost={setCost} />
-        <Lists crudData={crudData} setCrudData={setCrudData}/>
+        <Lists crudData={crudData} setCrudData={setCrudData} handleClick={handleClick}/>
 
         <div className="flex justify-between">
           <button onClick={handleRemoveAll} className="p-2 mt-4 text-red-500 border-2 border-red-500 rounded hover:text-white hover:bg-red-500">
